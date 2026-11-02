@@ -1,8 +1,9 @@
 package com.example.sales.report.migration.service.impl;
 
 import com.example.sales.report.migration.service.ProcessMigrationService;
-import com.example.sales.report.migration.channel.ReportMigrationChannel;
-import com.example.sales.report.model.ChannelModel;
+import com.example.sales.report.migration.branch.ReportMigrationBranch;
+import com.example.sales.report.dto.SalesReportParams;
+import com.example.sales.report.model.BranchModel;
 import com.example.sales.report.model.SalesReportModel;
 import com.example.sales.report.repository.SalesReportRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -18,46 +20,77 @@ public class ProcessMigrationServiceImpl implements ProcessMigrationService {
     private final SalesReportRepository salesReportRepository;
 
     @Override
-    public void createReport(String reportName) {
-        if (salesReportRepository.findReportByName(reportName).isEmpty()) {
-            salesReportRepository.save(new SalesReportModel(reportName, new ArrayList<>()));
+    public SalesReportModel insertReport(SalesReportParams params) {
+        Objects.requireNonNull(params, "Report parameters must not be null");
+
+        if (params.getName() == null || params.getName().isBlank()) {
+            throw new IllegalArgumentException("Report name must not be blank");
         }
+
+        return salesReportRepository.findReportByName(params.getName())
+                .orElseGet(() -> saveReport(params));
     }
 
     @Override
-    public void insertChannel(List<ReportMigrationChannel> reportMigrationChannelsList) {
-        reportMigrationChannelsList.forEach(reportMigrationChannel ->
-                insertChannel(
-                        reportMigrationChannel.getReportName(),
-                        reportMigrationChannel.getChannelName()
+    public void rollbackReport(String reportName) {
+        if (reportName == null || reportName.isBlank()) {
+            throw new IllegalArgumentException("Report name must not be blank");
+        }
+
+        salesReportRepository.deleteByName(reportName);
+    }
+
+    private SalesReportModel saveReport(SalesReportParams params) {
+        SalesReportModel report = new SalesReportModel();
+        report.setName(params.getName());
+        report.setStatus(params.getStatus());
+        report.setGranularity(params.getGranularity());
+        report.setPeriod(params.getPeriod());
+        report.setCriteria(params.getCriteria());
+        report.setBranches(params.getBranches() == null
+                ? new ArrayList<>()
+                : new ArrayList<>(params.getBranches()));
+
+        return salesReportRepository.save(report);
+    }
+
+    @Override
+    public void insertBranch(List<ReportMigrationBranch> reportMigrationBranches) {
+        reportMigrationBranches.forEach(reportMigrationBranch ->
+                insertBranch(
+                        reportMigrationBranch.getReportName(),
+                        reportMigrationBranch.getBranchName()
                 )
         );
     }
 
-    private void insertChannel(String reportName, String channelName) {
+    private void insertBranch(String reportName, String branchName) {
         SalesReportModel report = salesReportRepository.findReportByName(reportName)
                 .orElseThrow(() -> new IllegalArgumentException("Report not found" + reportName));
 
-        List<ChannelModel> channels = report.getChannels();
+        List<BranchModel> branches = report.getBranches();
 
-        if (channels == null) {
-            channels = new ArrayList<>();
-            report.setChannels(channels);
+        if (branches == null) {
+            branches = new ArrayList<>();
+            report.setBranches(branches);
         }
 
-        boolean channelAlreadyExists = channels.stream()
-                .anyMatch(channel -> channel.getName().equalsIgnoreCase(channelName));
+        boolean branchAlreadyExists = branches.stream()
+                .anyMatch(branch -> branch.getName().equalsIgnoreCase(branchName));
 
-        if (channelAlreadyExists) {
-            throw new IllegalStateException("Channel already exists: " + channelName);
+        if (branchAlreadyExists) {
+            throw new IllegalStateException("Branch already exists: " + branchName);
         }
 
-        ChannelModel channel = new ChannelModel(
-                channelName,
+        BranchModel branch = new BranchModel(
+                null,
+                branchName,
+                null,
+                null,
                 new ArrayList<>()
         );
 
-        channels.add(channel);
+        branches.add(branch);
 
         salesReportRepository.save(report);
     }

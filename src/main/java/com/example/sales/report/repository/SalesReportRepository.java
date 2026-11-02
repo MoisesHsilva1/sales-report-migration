@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface SalesReportRepository extends MongoRepository<SalesReportModel, String> {
     Optional<SalesReportModel> findReportByName(String reportName);
+    void deleteByName(String reportName);
 }
 

@@ -1,12 +1,15 @@
 package com.example.sales.report.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.sales.report.model.enums.ReportGranularity;
+import com.example.sales.report.model.enums.ReportStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +25,15 @@ public class SalesReportModel {
 
     private String name;
 
-    private List<ChannelModel> channels = new ArrayList<>();
+    private ReportStatus status;
 
-    public SalesReportModel(String name, List<ChannelModel> channels) {
-        this.name = name;
-        this.channels = channels;
-    }
+    private ReportGranularity granularity;
+
+    private PeriodModel period;
+
+    private CriteriaModel criteria;
+
+    private List<BranchModel> branches = new ArrayList<>();
+
+    private Instant finalizedAt;
 }

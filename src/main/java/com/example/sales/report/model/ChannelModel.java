@@ -1,5 +1,6 @@
 package com.example.sales.report.model;
 
+import com.example.sales.report.model.enums.ChannelType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChannelModel {
+    private ChannelType channelType;
 
-    private String name;
-
-    private List<TransactionModel> transactions = new ArrayList<>();
+    private List<PeriodResultModel> periodResults = new ArrayList<>();
 }

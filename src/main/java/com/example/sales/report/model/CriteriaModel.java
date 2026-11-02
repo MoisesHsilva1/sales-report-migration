@@ -1,5 +1,6 @@
 package com.example.sales.report.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionModel {
+public class CriteriaModel {
+    private String sellingProgram;
 
-    private String code;
-
-    private String name;
+    private String customerRelationship;
 }

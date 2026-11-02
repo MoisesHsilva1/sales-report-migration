@@ -1,0 +1,16 @@
+{
+  "name": "REPORT_Q3_RETAIL_B2B",
+  "status": "OPEN",
+  "granularity": "WEEK",
+  "period": {
+    "year": 2026,
+    "quarter": 3,
+    "startDate": "2026-07-01",
+    "endDate": "2026-09-30"
+  },
+  "criteria": {
+    "sellingProgram": "RETAIL",
+    "customerRelationship": "B2B"
+  },
+  "branches": []
+}

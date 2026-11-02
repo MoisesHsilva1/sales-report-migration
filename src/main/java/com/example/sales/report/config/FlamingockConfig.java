@@ -1,5 +1,6 @@
 package com.example.sales.report.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.flamingock.internal.core.external.store.CommunityAuditStore;
 import io.flamingock.store.mongodb.sync.MongoDBSyncAuditStore;
 import io.flamingock.targetsystem.mongodb.springdata.MongoDBSpringDataTargetSystem;
@@ -9,6 +10,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class FlamingockConfig {
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper().findAndRegisterModules();
+    }
 
     @Bean
     public MongoDBSpringDataTargetSystem mongoDatabaseTargetSystem(MongoTemplate mongoTemplate) {
